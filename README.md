@@ -1,2 +1,2 @@
 # PowerScriptsRepo
-Just Random PowerShell SCripts
+Just Random PowerShell Scripts
