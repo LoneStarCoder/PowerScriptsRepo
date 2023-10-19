@@ -12,7 +12,7 @@ Feel free to use and modify, but I am not responsible for any issues you may cau
 Disable NetBios over TCP/IP.
 
 ### Get-TemplateACLs_v2.ps1
-Pull all of the certificate templates from AD, and then filter them down only to the list of templates that have been published to a specific Issue Cert Server. Get the ACLs, including special permissions and export to CSV. This [article](https://devblogs.microsoft.com/powershell-community/understanding-get-acl-and-ad-drive-output/) helped to understand it. 
+Pull all of the certificate templates from AD, and then filter them down only to the list of templates that have been published to a specific Issue Cert Server. Get the ACLs, including special permissions and export to CSV. This [article](https://devblogs.microsoft.com/powershell-community/understanding-get-acl-and-ad-drive-output/) and this [article](https://www.checkyourlogs.net/powershell-reporting-on-certificate-templates-via-adsi/) helped to understand it and write the script.
 - EXAMPLE: .\Get-TemplateACLs.ps1 -IssuingCertServer "YourCertServerName"
 
 ### keepalive.ps1
