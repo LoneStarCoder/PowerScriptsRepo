@@ -1,3 +1,4 @@
+Function Get-FolderSizes {
 # Specify the path of the directory you want to analyze
 param($directoryPath = "C:\")
 
@@ -22,9 +23,7 @@ foreach ($dir in $directories) {
     }
 }
 
-# Sort the array by size in descending order and output the results
 $sortedFolders = $folderSizes | Sort-Object -Property SizeBytes -Descending
-$sortedFolders
-#foreach ($folder in $sortedFolders) {
-#    Write-Output ("{0} has a size of {1} MB ({2} GB)" -f $folder.Name, $folder.SizeMB, $folder.SizeGB)
-#}
+return $sortedFolders
+
+}
