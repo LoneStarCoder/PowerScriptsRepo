@@ -3,19 +3,18 @@
     Displays recent CISA ICS advisories in a color‑coded console view.
 
 .DESCRIPTION
-    This script downloads the Cybersecurity & Infrastructure Security Agency (CISA)
-    Industrial Control Systems (ICS) advisories RSS feed, filters the entries to the
-    last **$DaysBack** days, extracts CVSSv3 scores, maps them to four‑letter severity
-    buckets (CRIT, HIGH, MEDI, LOW), and prints each advisory with colorized severity
-    for quick triage.
+    Downloads the Cybersecurity & Infrastructure Security Agency (CISA) Industrial
+    Control Systems (ICS) advisories RSS feed, filters entries newer than the
+    last **$DaysBack** days, extracts any CVSS‑v3 base score, maps the score to a
+    four‑letter severity bucket (CRIT, HIGH, MEDI, LOW), and prints each advisory
+    with colorised severity for quick triage.
 
 .PARAMETER FeedUrl
-    (String) The RSS feed URL to query. Defaults to
+    (String) The RSS feed URL.  Defaults to
     https://www.cisa.gov/cybersecurity-advisories/ics-advisories.xml.
 
 .PARAMETER DaysBack
-    (Int) The look‑back window (in days) used to filter advisories based on their
-    publication date. Defaults to 14.
+    (Int)  Look‑back window in days (default: 14).
 
 .EXAMPLE
     PS> .\Get-ICSAdvisories.ps1
@@ -26,13 +25,13 @@
     Shows the last 30 days of advisories.
 
 .NOTES
-    Author  : Brody Kilpatrick
-    Created : 12 May 2025
-    Version : 1.0
+    Author  : Brody Kilpatrick
+    Updated : 12 May 2025
+    Version : 1.1 – fixed ForegroundColor null issue & trimmed severity values.
 #>
 
 [string] $FeedUrl  = 'https://www.cisa.gov/cybersecurity-advisories/ics-advisories.xml'
-[int]    $DaysBack = 14
+[int]    $DaysBack = 30
 
 function Get-IcsAdvisoryFeed {
     <#
@@ -40,9 +39,9 @@ function Get-IcsAdvisoryFeed {
         Download and parse the CISA ICS advisories feed.
 
     .DESCRIPTION
-        Retrieves the RSS feed from the provided URL, converts it to XML,
-        and yields one custom object per advisory whose publication date is
-        newer than the supplied cutoff.
+        Retrieves the RSS feed from the provided URL, converts it to XML, and
+        emits one custom object per advisory that is newer than the supplied
+        cutoff date.
 
     .PARAMETER Url
         The RSS feed URL to query.
@@ -51,15 +50,12 @@ function Get-IcsAdvisoryFeed {
         A [datetime] value; advisories older than this are skipped.
 
     .OUTPUTS
-        [pscustomobject] with the properties:
-            Date, Advisory, Severity, CVSS, Title, Link
+        [pscustomobject] with the properties: Date, Advisory, Severity, CVSS,
+        Title, Link.
     #>
     param(
-        [Parameter(Mandatory)]
-        [string]   $Url,
-
-        [Parameter(Mandatory)]
-        [datetime] $Cutoff
+        [Parameter(Mandatory)][string]   $Url,
+        [Parameter(Mandatory)][datetime] $Cutoff
     )
 
     $xml = [xml](Invoke-WebRequest -Uri $Url -UseBasicParsing -ErrorAction Stop).Content
@@ -75,7 +71,7 @@ function Get-IcsAdvisoryFeed {
             { $_ -ge 9.0 }                 { 'CRIT' }
             { $_ -ge 7.0 -and $_ -lt 9.0 } { 'HIGH' }
             { $_ -ge 4.0 -and $_ -lt 7.0 } { 'MEDI' }
-            default                        { 'LOW ' }
+            default                        { 'LOW'  }
         }
 
         [pscustomobject]@{
@@ -89,37 +85,38 @@ function Get-IcsAdvisoryFeed {
     }
 }
 
+function Get-ConsoleColor {
+    <#
+    .SYNOPSIS
+        Map severity string to a [ConsoleColor] value.
+    #>
+    param([string]$Severity)
+
+    switch ($Severity.Trim()) {
+        'CRIT' { [ConsoleColor]::Red       }
+        'HIGH' { [ConsoleColor]::DarkRed   }
+        'MEDI' { [ConsoleColor]::Yellow    }
+        'LOW'  { [ConsoleColor]::Green     }
+        default { [ConsoleColor]::Gray     }
+    }
+}
+
 function Show-IcsAdvisories {
     <#
     .SYNOPSIS
         Write a color‑coded summary to the console.
 
-    .DESCRIPTION
-        Accepts an array of advisory objects (as produced by
-        Get-IcsAdvisoryFeed) and writes a one‑line summary for each, with the
-        severity column colorized to improve at‑a‑glance scanning.
-
     .PARAMETER Items
-        The advisory objects to display. They must include at least the
-        properties: Date, Severity, Advisory, Title.
+        Advisory objects to display.
     #>
-    param(
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [object[]] $Items
-    )
+    param([Parameter(Mandatory, ValueFromPipeline)][object[]]$Items)
 
     foreach ($row in $Items) {
-        $sevColor = switch ($row.Severity) {
-            'CRIT' { 'Red'     }
-            'HIGH' { 'DarkRed' }
-            'MEDI' { 'Yellow'  }
-            'LOW ' { 'Green'   }
-            default { 'Gray'   }
-        }
+        $color = Get-ConsoleColor -Severity $row.Severity
 
         Write-Host ($row.Date.ToString('yyyy-MM-dd')) -ForegroundColor Cyan -NoNewline
         Write-Host ' | ' -NoNewline
-        Write-Host $row.Severity -ForegroundColor $sevColor -NoNewline
+        Write-Host $row.Severity -ForegroundColor $color -NoNewline
         Write-Host " | $($row.Advisory) | $($row.Title)"
     }
 }
