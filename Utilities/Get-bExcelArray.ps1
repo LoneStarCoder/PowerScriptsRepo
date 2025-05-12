@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Imports Excel clipboard data into PowerShell as objects by default (headers assumed).
+Imports Excel clipboard data into PowerShell as objects by default (headers assumed). It has been tested with basic information and columns. I dont know what it would do with more complex stuff. You could enhance it.
 
 .DESCRIPTION
 Get-bExcelArray retrieves the current clipboard contents (expecting tab-delimited data copied from Excel) and converts it into a structured array. By default, it treats the first row as column headers and returns an array of PSCustomObject instances. If you prefer a raw 2D array of strings, use the -Raw switch.
