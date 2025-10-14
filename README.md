@@ -1,19 +1,26 @@
 # PowerScriptsRepo
 
 ## Description
-Just Random PowerShell Scripts
+A collection of PowerShell scripts for various system administration and maintenance tasks.
 
 ## Disclaimer
-Feel free to use and modify, but I am not responsible for any issues you may cause. Use at your own risk.
+These scripts are provided as-is, without warranty of any kind. Users are free to use and modify them, but do so at their own risk. The author assumes no responsibility for any issues that may arise from their use.
 
 ## Scripts
 
 ### DisableNBT.ps1
-Disable NetBios over TCP/IP.
+A PowerShell script to disable NetBios over TCP/IP on network interfaces. This can help improve network security by disabling an older protocol that may not be needed in modern environments.
 
 ### Get-TemplateACLs_v2.ps1
-Pull all of the certificate templates from AD, and then filter them down only to the list of templates that have been published to a specific Issue Cert Server. Get the ACLs, including special permissions and export to CSV. This [article](https://devblogs.microsoft.com/powershell-community/understanding-get-acl-and-ad-drive-output/) and this [article](https://www.checkyourlogs.net/powershell-reporting-on-certificate-templates-via-adsi/) helped to understand it and write the script.
-- EXAMPLE: .\Get-TemplateACLs.ps1 -IssuingCertServer "YourCertServerName"
+A utility script to retrieve and analyze certificate template permissions from Active Directory. The script:
+- Retrieves all certificate templates from Active Directory
+- Filters templates based on a specified Certificate Authority server
+- Extracts and displays Access Control Lists (ACLs) including special permissions
+
+Usage:
+```powershell
+.\Get-TemplateACLs.ps1 -IssuingCertServer "YourCertServerName"
+```
 
 ### keepalive.ps1
-Presses the magic "F15" key to keep your computer from sleeping - in most cases. There are other scripts out there that move the mouse and such, but for me, this is sufficient.
+A simple but effective script that prevents system sleep by simulating an F15 key press. This is a lightweight alternative to scripts that use mouse movement or more complex actions to keep a system active. Useful for situations where system sleep needs to be prevented without modifying system power settings.
