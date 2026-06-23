@@ -16,7 +16,7 @@ function Generate-Passphrase {
     )
 
     # Load words from a file assumed to be in the same directory as the script
-    $words = Get-Content "C:\google-10000-english-usa-no-swears-medium.txt" -ErrorAction Stop
+    $words = Get-Content ".\google-10000-english-usa-no-swears-medium.txt" -ErrorAction Stop
     $symbols = "!@#$%&*(){}"
     $passphrase = @()
 
