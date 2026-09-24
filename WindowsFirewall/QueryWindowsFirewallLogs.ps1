@@ -49,7 +49,7 @@ $fw | ? {$_.Action -eq 'drop' -and $_.path -eq 'RECEIVE' -and $_.srcIP -notlike 
 $fw | ? {$_.path -eq 'RECEIVE' -and $_.srcIP -notlike "192.168.1.*" } | ft *
 
 
-$VPNAddress = '10.101.161.57'
-$fw | ? {$_.Action -eq 'drop' -and $_.path -eq 'RECEIVE' -and $_.dstIP -eq '10.101.161.57' } | ft *
+$VPNAddress = '10.1.1.1'
+$fw | ? {$_.Action -eq 'drop' -and $_.path -eq 'RECEIVE' -and $_.dstIP -eq '10.1.1.1' } | ft *
 
 #>
