@@ -42,4 +42,4 @@ function Get-bExcelArray {
 }
 
 # Optional alias for convenience
-alias gba Get-bExcelArray
+set-alias gba Get-bExcelArray
