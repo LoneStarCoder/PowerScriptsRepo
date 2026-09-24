@@ -15,8 +15,7 @@
 
     Writes the raw list, the raw details and any remaining failures as JSON,
     and optionally a flattened CSV with one column per property returned.
-
-.REQUIREMENTS
+    REQUIREMENTS
     - Windows PowerShell 5.1 or PowerShell 7+
     - Microsoft.Graph.Authentication module (v2+)
     - CopilotPackages.Read.All
@@ -34,7 +33,7 @@
 
 .PARAMETER SweepPasses
     How many times to go back over packages that failed with a transient
-    error (424, 429, 500, 502, 503, 504). Default 3.
+    error (424, 429, 500, 502, 503, 504). Default 4.
 
 .PARAMETER SweepDelaySeconds
     Pause before each sweep pass. Default 60.
@@ -50,7 +49,7 @@ param(
     [ValidateRange(0, 10)]
     [int]$SweepPasses = 4,
     [ValidateRange(0, 600)]
-    [int]$SweepDelaySeconds = 5
+    [int]$SweepDelaySeconds = 60
 )
 
 $ErrorActionPreference = 'Stop'
