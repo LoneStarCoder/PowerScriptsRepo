@@ -60,6 +60,7 @@ Get-FolderSizes -directoryPath 'C:\Users'
 | Script | Description |
 | --- | --- |
 | `Get-CopilotPackageRegistry.ps1` | Exports the Microsoft 365 Copilot package registry (agents, Teams apps, Office add-ins) through the Microsoft Graph Package Management API. Retries the intermittent `424 Failed Dependency` responses and writes JSON, plus an optional flattened CSV. Requires `Microsoft.Graph.Authentication`, the `CopilotPackages.Read.All` permission and Microsoft Agent 365 licensing. |
+| `Get-TenantInventory.ps1` | Read-only snapshot of an Entra ID / M365 tenant: organization, domains, licences, user counts (guests, disabled, stale), directory role holders, security defaults, Conditional Access policies, expiring app secrets/certificates and MFA registration. Writes one JSON file per section plus a summary. Signs in interactively, with `-DeviceCode`, or with `-ProxyCredential` (app-only, secret held by an outbound proxy). Requires `Microsoft.Graph.Authentication`. |
 
 ```powershell
 .\M365\Get-CopilotPackageRegistry.ps1 -AgentsOnly -ExportCsv
@@ -151,3 +152,4 @@ Short, single-purpose scripts. Edit the placeholder values before running.
 | File | Description |
 | --- | --- |
 | `installing_psmodules_offline.md` | How to install `Microsoft.Graph` and other PowerShell Gallery modules on servers with no internet access. |
+| `claude_cloud_m365_tenant_access.md` | Setting up a Claude Code cloud environment to read an M365 tenant: setup script, device code sign-in, or app-only access with the secret kept out of the session via API credentials. |
