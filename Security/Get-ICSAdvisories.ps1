@@ -6,7 +6,8 @@
     Downloads the Cybersecurity & Infrastructure Security Agency (CISA) Industrial
     Control Systems (ICS) advisories RSS feed, filters entries newer than the
     last **$DaysBack** days, extracts any CVSS‑v3 base score, maps the score to a
-    four‑letter severity bucket (CRIT, HIGH, MEDI, LOW), and prints each advisory
+    four‑letter severity bucket (CRIT, HIGH, MEDI, LOW, or UNKN when no score is
+    found), and prints each advisory
     with colorised severity for quick triage.
 
 .PARAMETER FeedUrl
@@ -14,15 +15,15 @@
     https://www.cisa.gov/cybersecurity-advisories/ics-advisories.xml.
 
 .PARAMETER DaysBack
-    (Int)  Look‑back window in days (default: 14).
+    (Int)  Look‑back window in days (default: 30).
 
 .EXAMPLE
     PS> .\Get-ICSAdvisories.ps1
-    Shows advisories published in the last 14 days.
+    Shows advisories published in the last 30 days.
 
 .EXAMPLE
-    PS> .\Get-ICSAdvisories.ps1 -DaysBack 30
-    Shows the last 30 days of advisories.
+    PS> .\Get-ICSAdvisories.ps1 -DaysBack 7
+    Shows the last 7 days of advisories.
 
 .NOTES
     Author  : Brody Kilpatrick
@@ -30,8 +31,10 @@
     Version : 1.1 – fixed ForegroundColor null issue & trimmed severity values.
 #>
 
-[string] $FeedUrl  = 'https://www.cisa.gov/cybersecurity-advisories/ics-advisories.xml'
-[int]    $DaysBack = 30
+param(
+    [string] $FeedUrl  = 'https://www.cisa.gov/cybersecurity-advisories/ics-advisories.xml',
+    [int]    $DaysBack = 30
+)
 
 function Get-IcsAdvisoryFeed {
     <#
@@ -67,11 +70,13 @@ function Get-IcsAdvisoryFeed {
         $advisoryId = if ($item.title -match '(\w+-\d+-\d+-\d+)') { $Matches[1] }
         $cvssRaw    = if ($item.description -match 'CVSS.*?(\d+\.\d+)') { [decimal]$Matches[1] }
 
-        $severity = switch ($cvssRaw) {
-            { $_ -ge 9.0 }                 { 'CRIT' }
-            { $_ -ge 7.0 -and $_ -lt 9.0 } { 'HIGH' }
-            { $_ -ge 4.0 -and $_ -lt 7.0 } { 'MEDI' }
-            default                        { 'LOW'  }
+        $severity = if ($null -eq $cvssRaw) { 'UNKN' } else {
+            switch ($cvssRaw) {
+                { $_ -ge 9.0 }                 { 'CRIT' }
+                { $_ -ge 7.0 -and $_ -lt 9.0 } { 'HIGH' }
+                { $_ -ge 4.0 -and $_ -lt 7.0 } { 'MEDI' }
+                default                        { 'LOW'  }
+            }
         }
 
         [pscustomobject]@{
@@ -125,5 +130,10 @@ function Show-IcsAdvisories {
 $Cutoff   = (Get-Date).AddDays(-$DaysBack)
 $FeedData = Get-IcsAdvisoryFeed -Url $FeedUrl -Cutoff $Cutoff |
             Sort-Object Date -Descending
+
+if (-not $FeedData) {
+    Write-Host "No ICS advisories published in the last $DaysBack days." -ForegroundColor Yellow
+    return
+}
 
 Show-IcsAdvisories -Items $FeedData

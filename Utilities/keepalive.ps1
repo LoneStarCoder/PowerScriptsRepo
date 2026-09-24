@@ -7,4 +7,5 @@ While ($i -lt 100) {
 $wshell.SendKeys("{F15}")
 get-date
 Start-Sleep -Seconds 100
+$i++
 }

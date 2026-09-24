@@ -1,11 +1,13 @@
 #Query Windows Firewall Log
-$Path = "C:\windows\system32\LogFiles\Firewall\pfirewall.log"
-$Path = "C:\windows\system32\LogFiles\Firewall\pfirewall.log.old"
-$fwlogcontents = Get-Content -Path $Path | Select-String "drop" | Select-String "RECEIVE" | Select-String -Pattern "224.0.0.251|239.255.255.250|224.0.0.252|255.255.255.255" -NotMatch
-$fwlogcontents = Get-Content -Path $Path | Select-String "drop" | Select-String "send" | Select-String -Pattern "224.0.0.251|239.255.255.250|224.0.0.252|255.255.255.255" -NotMatch
-$fwlogcontentswithcommas = $fwlogcontents -replace " ",","
-#$fwlogcontentswithcommasClean = $fwlogcontentswithcommas.Split('`n') | Select -skip 11
-$fwlogcontentswithcommasClean = $fwlogcontentswithcommas.Split('`n')
+# Use -Path "C:\windows\system32\LogFiles\Firewall\pfirewall.log.old" for the rolled-over log
+param(
+    [string]$Path = "C:\windows\system32\LogFiles\Firewall\pfirewall.log",
+    [ValidateSet('RECEIVE', 'SEND')]
+    [string]$Direction = 'RECEIVE'
+)
+$fwlogcontents = Get-Content -Path $Path | Select-String "drop" | Select-String $Direction | Select-String -Pattern "224.0.0.251|239.255.255.250|224.0.0.252|255.255.255.255" -NotMatch
+# One string per log line, space-delimited fields converted to commas
+$fwlogcontentswithcommasClean = $fwlogcontents -replace " ",","
 
 $fw = @()
 $i=0
