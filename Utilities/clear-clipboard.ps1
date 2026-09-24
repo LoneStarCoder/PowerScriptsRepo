@@ -5,4 +5,5 @@ while ($true) {
   set-clipboard -Value $null
   write-host "cleared"
   }
+  start-sleep -Seconds 1
 }

@@ -16,7 +16,19 @@ $filter = @{
   StartTime = $since
 }
 
-$events = Get-WinEvent -FilterHashtable $filter -ErrorAction Stop |
+# Get-WinEvent throws when nothing matches; treat that as zero events
+try {
+  $rawEvents = Get-WinEvent -FilterHashtable $filter -ErrorAction Stop
+} catch {
+  if ($_.FullyQualifiedErrorId -like 'NoMatchingEventsFound*') { $rawEvents = @() } else { throw }
+}
+
+if (-not $rawEvents) {
+  Write-Output "No NTLM events found since $since"
+  return
+}
+
+$events = @($rawEvents |
 ForEach-Object {
   $xml = [xml]$_.ToXml()
 
@@ -45,7 +57,7 @@ ForEach-Object {
     Message         = ($_.Message -replace "`r?`n", ' ')
     RawXml          = $_.ToXml()
   }
-}
+})
 
 # Ensure output folder exists
 $dir = Split-Path $OutputCsv -Parent

@@ -6,6 +6,8 @@ $Files = Get-ChildItem -Path $path | ? {$_.LastWriteTime -ge $age}
 
 #$files | select -First 1 | fl *
 
+$parsedLogs = @()
+
 foreach ($File in $Files) {
 
     $logFile = $File.FullName
@@ -21,7 +23,7 @@ foreach ($File in $Files) {
     $dataLines = $lines | Where-Object { $_ -notmatch "^#" -and $_ -match "\S" }
 
     # Parse each line into an object
-    $parsedLogs = foreach ($line in $dataLines) {
+    $parsedLogs += foreach ($line in $dataLines) {
         $columns = $line -split ",(?=(?:[^""]*""[^""]*"")*[^""]*$)"  # Handles quoted commas
         $obj = [ordered]@{}
         for ($i = 0; $i -lt $fields.Count; $i++) {
