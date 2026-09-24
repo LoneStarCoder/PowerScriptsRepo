@@ -284,8 +284,8 @@ function Get-TargetIPs {
 
         if ($trimmed -match '^(?<prefix>\d{1,3}(?:\.\d{1,3}){2})$') {
             $basePrefix = $Matches.prefix
-            foreach ($host in 1..254) {
-                $ip = "$basePrefix.$host"
+            foreach ($hostOctect in 1..254) {
+                $ip = "$basePrefix.$hostOctect"
                 if ($seen.Add($ip)) {
                     $targets.Add($ip)
                 }
